@@ -60,10 +60,22 @@ src/
 1. Import and use the PrivyProvider in your app:
 
 ```typescript
-import { PrivyProvider } from "./privy/privyProvider";
+import PrivyWrapper from "@/privy/privyProvider";
 
-function App({ children }) {
-  return <PrivyProvider>{children}</PrivyProvider>;
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        suppressHydrationWarning={true}
+      >
+        <PrivyWrapper>{children}</PrivyWrapper>
+      </body>
+    </html>
+  );
 }
 ```
 
