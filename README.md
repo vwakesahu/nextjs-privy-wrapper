@@ -1,36 +1,154 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js Privy Integration
 
-## Getting Started
+This project demonstrates integration of Privy authentication with Next.js 15, providing a simple way to handle wallet connections.
 
-First, run the development server:
+## Features
+
+- Wallet connection using Privy
+- Wallet state management
+- TypeScript support
+- Loading states and error handling
+
+## Prerequisites
+
+- Node.js
+- npm or yarn
+- A Privy account and App ID
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/vwakesahu/nextjs-privy-wrapper.git
+cd nextjs-privy-wrapper
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Set up environment variables:
+   Create a `.env.local` file in the root directory and add your Privy App ID:
+
+```
+NEXT_PUBLIC_PRIVY_APP_ID=your-privy-app-id
+```
+
+A sample environment file `.env.sample` is provided for reference.
+
+## Project Structure
+
+```
+src/
+  ├── privy/
+  │   ├── privyProvider.tsx    # Privy provider wrapper
+  │   ├── walletContext.tsx    # Wrapper made on top of Privy to simplify things
+  │   ├── config.ts           # Privy configuration
+  │   └── chains.ts           # Chain configuration
+  ├── app/
+  │   ├── layout.tsx          # Root layout with hydration handling
+  │   └── page.tsx            # Main page component
+  └── components/
+      └── ClientWrapper.tsx   # Client-side wallet UI component
+```
+
+## Usage
+
+1. Import and use the PrivyProvider in your app:
+
+```typescript
+import { PrivyProvider } from "./privy/privyProvider";
+
+function App({ children }) {
+  return <PrivyProvider>{children}</PrivyProvider>;
+}
+```
+
+2. Access wallet data using the context:
+
+```typescript
+import { useWalletContext } from "./privy/walletContext";
+
+function YourComponent() {
+  const { signer, w0, address, isLoading, error } = useWalletContext();
+  // Use wallet data...
+}
+```
+
+### Checking if a User is Connected
+
+To determine if a user has connected their wallet, use:
+
+```typescript
+import { usePrivy } from "@privy-io/react-auth";
+
+function WalletStatus() {
+  const { logout, authenticated, login } = usePrivy();
+
+  return (
+    <div>
+      {authenticated ? (
+        <button onClick={logout}>Logout</button>
+      ) : (
+        <button onClick={login}>Login</button>
+      )}
+    </div>
+  );
+}
+```
+
+## Configuration
+
+### Privy Configuration
+
+The Privy configuration is set in `src/privy/config.ts`:
+
+```typescript
+export const privyConfig = {
+  appId: process.env.NEXT_PUBLIC_PRIVY_APP_ID,
+  config: {
+    // ... configuration options
+  },
+};
+```
+
+### Chain Configuration
+
+Chain configuration for the network is defined in `src/privy/chains.ts`:
+
+```typescript
+export const incoNetwork = {
+  id: 21097,
+  network: "Rivest",
+  // ... other chain configuration
+};
+```
+
+## Development
+
+Run the development server:
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Building for Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+# or
+yarn build
+```
 
-## Learn More
+## Acknowledgments
 
-To learn more about Next.js, take a look at the following resources:
+- [Privy Documentation](https://docs.privy.io/)
+- [Next.js Documentation](https://nextjs.org/docs)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
